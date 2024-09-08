@@ -8,17 +8,23 @@ class TreeNode:
     def __init__(self, value):
         self.value = value
         self.children = []
-        self.expanded = False  # New: track whether the node is expanded
+        self.expanded = False
+        self.size = 0  # New: size of the subtree
 
     def add_child(self, child):
         self.children.append(child)
 
     def toggle(self):
-        self.expanded = not self.expanded  # New: toggle expanded/collapsed state
+        self.expanded = not self.expanded
+
+    def calculate_size(self):
+        self.size = 1 + sum(child.calculate_size() for child in self.children)
+        return self.size
 
     def __repr__(self, level=0):
         indent = " " * (level * 4)
-        result = f"{indent}{self.value} {'[+]' if not self.expanded else '[-]'}\n"
+        size_info = f"({self.size})"
+        result = f"{indent}{self.value} {size_info} {'[+]' if not self.expanded else '[-]'}\n"
         if self.expanded:
             for child in self.children:
                 result += child.__repr__(level + 1)
@@ -53,22 +59,21 @@ def parse_line(line):
 
 def build_tree(lines):
     root = TreeNode("root")
-    node_stack = [(root, -1)]  # Stack holds tuples of (TreeNode, indent_level)
+    node_stack = [(root, -1)]
 
     for line in lines:
         indent, value = parse_line(line)
 
-        # Remove nodes from the stack that are no longer parents for this level
         while node_stack and node_stack[-1][1] >= indent:
             node_stack.pop()
 
-        # Create new node and add it to the current parent node
         new_node = TreeNode(value)
         node_stack[-1][0].add_child(new_node)
 
-        # Push the new node onto the stack
         node_stack.append((new_node, indent))
 
+    # Calculate sizes after building the tree
+    root.calculate_size()
     return root
 
 
