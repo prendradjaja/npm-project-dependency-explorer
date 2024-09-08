@@ -1,0 +1,9 @@
+example3@1.0.0 /path/to/project
+├─┬ server@1.0.0 -> ./server
+│ └─┬ tsx@4.19.0
+│   ├─┬ esbuild@0.23.1
+│   │ ├── UNMET OPTIONAL DEPENDENCY @esbuild/aix-ppc64@0.23.1
+│   │ ├── UNMET OPTIONAL DEPENDENCY @esbuild/android-arm@0.23.1
+│   │ ├── @esbuild/darwin-x64@0.23.1
+└─┬ shared@1.0.0 -> ./shared
+  └── typescript@5.5.4
