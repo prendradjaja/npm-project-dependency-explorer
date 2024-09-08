@@ -1,4 +1,7 @@
 # Mostly written by generative AI, see prompts.txt
+#
+# Usage:
+#   python3 main.py input.txt
 
 import sys
 import curses
