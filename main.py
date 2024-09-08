@@ -1,20 +1,27 @@
 # Mostly written by generative AI, see prompts.txt
 
 import sys
+import curses
+
 
 class TreeNode:
     def __init__(self, value):
         self.value = value
         self.children = []
+        self.expanded = False  # New: track whether the node is expanded
 
     def add_child(self, child):
         self.children.append(child)
 
+    def toggle(self):
+        self.expanded = not self.expanded  # New: toggle expanded/collapsed state
+
     def __repr__(self, level=0):
         indent = " " * (level * 4)
-        result = f"{indent}{self.value}\n"
-        for child in self.children:
-            result += child.__repr__(level + 1)
+        result = f"{indent}{self.value} {'[+]' if not self.expanded else '[-]'}\n"
+        if self.expanded:
+            for child in self.children:
+                result += child.__repr__(level + 1)
         return result
 
 
@@ -65,9 +72,64 @@ def build_tree(lines):
     return root
 
 
+def display_tree(stdscr, tree, selected_node):
+    stdscr.clear()
+
+    def draw_node(node, level=0, index=0):
+        indent = " " * (level * 4)
+        symbol = "[+]" if not node.expanded else "[-]"
+        line = f"{indent}{node.value} {symbol}"
+        if index == selected_node:
+            stdscr.addstr(f"> {line}\n", curses.A_REVERSE)
+        else:
+            stdscr.addstr(f"  {line}\n")
+        current_index = index
+        if node.expanded:
+            for child in node.children:
+                current_index = draw_node(child, level + 1, current_index + 1)
+        return current_index
+
+    draw_node(tree)
+    stdscr.refresh()
+
+
+def traverse_tree(node, flat_list=None):
+    if flat_list is None:
+        flat_list = []
+    flat_list.append(node)
+    if node.expanded:
+        for child in node.children:
+            traverse_tree(child, flat_list)
+    return flat_list
+
+
+def curses_main(stdscr, root):
+    selected_node = 0
+    tree_list = traverse_tree(root)  # Start with a flat list
+
+    while True:
+        display_tree(stdscr, root, selected_node)
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_DOWN:
+            selected_node = min(selected_node + 1, len(tree_list) - 1)
+        elif key == curses.KEY_UP:
+            selected_node = max(selected_node - 1, 0)
+        elif key == 10:  # Enter key to toggle expand/collapse
+            selected_node_node = tree_list[selected_node]
+            selected_node_node.toggle()
+            tree_list = traverse_tree(root)  # Re-flatten the tree after toggling
+
+        elif key == ord('q'):  # Quit on 'q'
+            break
+
+
 if __name__ == "__main__":
     # Sample input lines (trimmed of excess whitespace from output)
     lines = open(sys.argv[1]).read().strip().splitlines()
 
     tree = build_tree(lines)
-    print(tree)
+
+    # Start curses UI
+    curses.wrapper(curses_main, tree)
