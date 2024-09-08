@@ -1,0 +1,5 @@
+Known limitations:
+
+- It crashes if it needs to display more than fits on the screen
+  - It would be easy to prevent a crash and just clip the output to what fits on the screen
+  - But next we'd want scrolling too -- that would be a more involved change

@@ -1,6 +1,6 @@
 are you familiar with npm ls --all
 
-...
+--------------------------------------------------------------------------------
 
 here's a small example of the output format
 
@@ -50,3 +50,13 @@ use the following approach
 - use the length of the "first half" as the indentation size
 - use indentation to determine tree structure
 - don't need to parse the second half, just treat it as a string
+
+--------------------------------------------------------------------------------
+
+great! now let's add a curses ui that allows exploring the tree -- expand and collapse any node (start with all collapsed)
+
+don't need to show me the whole program -- just show me the new part and the new main
+
+--------------------------------------------------------------------------------
+
+great! now modify the code so that at each node we show the size of that subtree

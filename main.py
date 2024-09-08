@@ -83,7 +83,7 @@ def display_tree(stdscr, tree, selected_node):
     def draw_node(node, level=0, index=0):
         indent = " " * (level * 4)
         symbol = "[+]" if not node.expanded else "[-]"
-        line = f"{indent}{node.value} {symbol}"
+        line = f"{indent}({node.size}) {node.value} {symbol}"
         if index == selected_node:
             stdscr.addstr(f"> {line}\n", curses.A_REVERSE)
         else:
